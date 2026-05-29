@@ -50,12 +50,13 @@ function calcularBFReal() {
 }
 
 // ==========================================
-// 3. DIÁRIO DE TREINO E GAMIFICAÇÃO
+// 3. DIÁRIO DE TREINO, PESO E GAMIFICAÇÃO
 // ==========================================
 let recordesPessoais = JSON.parse(localStorage.getItem('athlete_prs')) || {};
 let historicoTreinos = JSON.parse(localStorage.getItem('athlete_historico')) || [];
 let historicoPeso = JSON.parse(localStorage.getItem('athlete_historico_peso')) || [];
 let xpTotal = parseInt(localStorage.getItem('athlete_xp')) || 0;
+let diarioAlimentar = JSON.parse(localStorage.getItem('athlete_diario')) || [];
 let chart;
 
 function registrarTreino() {
@@ -83,34 +84,14 @@ function registrarTreino() {
     atualizarGamificacao();
 }
 
-function registrarPeso() {
-    const peso = document.getElementById('novoPeso').value;
-    if (!peso) return alert("Insira o peso.");
-    historicoPeso.unshift({ data: new Date().toLocaleDateString(), peso });
-    localStorage.setItem('athlete_historico_peso', JSON.stringify(historicoPeso));
-    
-    renderizarHistoricoPeso();
-    desenharGrafico();
-    document.getElementById('novoPeso').value = '';
-}
-
 // ==========================================
-// 4. MÓDULO DIETA (CORRIGIDO)
+// 4. MÓDULO DIETA POR ORÇAMENTO
 // ==========================================
 function gerarDietaEconomica() {
-    const orcamentoInput = document.getElementById('orcamento');
+    const orcamento = parseFloat(document.getElementById('orcamento').value);
     const resultadoDiv = document.getElementById('resultadoDieta');
-    
-    if (!orcamentoInput) {
-        console.error("Elemento 'orcamento' não encontrado no HTML.");
-        return;
-    }
 
-    const orcamento = parseFloat(orcamentoInput.value);
-    if (!orcamento || orcamento <= 0) {
-        alert("Por favor, insira um valor de orçamento válido.");
-        return;
-    }
+    if (!orcamento || orcamento <= 0) return alert("Insira um orçamento válido.");
 
     const bancoDeAlimentos = [
         { nome: "Ovos (dúzia)", preco: 12, prot: 72 },
@@ -132,14 +113,52 @@ function gerarDietaEconomica() {
     });
 
     html += `<br><strong>Total do Carrinho: R$ ${gasto}</strong>`;
-    
     resultadoDiv.innerHTML = html;
     resultadoDiv.style.display = 'block';
 }
 
 // ==========================================
-// 5. UTILITÁRIOS E RENDERIZAÇÃO
+// 5. DIÁRIO ALIMENTAR
 // ==========================================
+function registrarRefeicao() {
+    const alimento = document.getElementById('alimento').value;
+    const calorias = parseInt(document.getElementById('caloriasConsumidas').value);
+
+    if(!alimento || !calorias) return alert("Preencha o alimento e as calorias.");
+
+    diarioAlimentar.push({ alimento, calorias });
+    localStorage.setItem('athlete_diario', JSON.stringify(diarioAlimentar));
+    
+    document.getElementById('alimento').value = '';
+    document.getElementById('caloriasConsumidas').value = '';
+    renderizarDiario();
+}
+
+function renderizarDiario() {
+    const lista = document.getElementById('listaRefeicoes');
+    let total = 0;
+    
+    lista.innerHTML = diarioAlimentar.map(r => {
+        total += r.calorias;
+        return `<div>${r.alimento}: ${r.calorias} kcal</div>`;
+    }).join('');
+    
+    document.getElementById('totalCalConsumido').innerText = total;
+}
+
+// ==========================================
+// 6. UTILITÁRIOS E RENDERIZAÇÃO
+// ==========================================
+function registrarPeso() {
+    const peso = document.getElementById('novoPeso').value;
+    if (!peso) return alert("Insira o peso.");
+    historicoPeso.unshift({ data: new Date().toLocaleDateString(), peso });
+    localStorage.setItem('athlete_historico_peso', JSON.stringify(historicoPeso));
+    
+    desenharGrafico();
+    document.getElementById('novoPeso').value = '';
+}
+
 function renderizarTabelaTreinos() {
     const tabela = document.getElementById('tabelaTreino');
     if (tabela) {
@@ -149,19 +168,19 @@ function renderizarTabelaTreinos() {
     }
 }
 
-function renderizarHistoricoPeso() {
-    const hist = document.getElementById('historicoPeso');
-    if (hist) {
-        hist.innerHTML = historicoPeso.map(h => `<div>${h.data}: <strong>${h.peso} kg</strong></div>`).join('');
-    }
-}
-
 function atualizarGamificacao() {
     let nivel = Math.floor(xpTotal / 100) + 1;
-    const elNivel = document.getElementById('nivelUsuario');
-    const elXP = document.getElementById('xpText');
-    if (elNivel) elNivel.innerText = nivel;
-    if (elXP) elXP.innerText = `XP Atual: ${xpTotal} / ${nivel * 100}`;
+    document.getElementById('nivelUsuario').innerText = nivel;
+    document.getElementById('xpText').innerText = `XP Atual: ${xpTotal} / ${nivel * 100}`;
+}
+
+function exportarDados() {
+    const dados = { historicoTreinos, historicoPeso, recordesPessoais };
+    const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'meu_evolucao_athlete.txt';
+    a.click();
 }
 
 function desenharGrafico() {
@@ -180,7 +199,7 @@ function desenharGrafico() {
 
 window.onload = () => {
     renderizarTabelaTreinos();
-    renderizarHistoricoPeso();
+    renderizarDiario();
     atualizarGamificacao();
     desenharGrafico();
 };
