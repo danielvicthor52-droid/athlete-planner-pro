@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athlete Planner Pro | Dashboard</title>
+    <!-- Biblioteca de Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <header>
+        <h1>Athlete Planner Pro</h1>
+        <p>Inteligência Artificial para sua Evolução Corporal</p>
+    </header>
+
+    <div class="dashboard-grid">
+
+        <!-- Painel de Honra (Gamificação) -->
+        <div class="card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #3b82f6;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 style="margin: 0;">Nível: <span id="nivelUsuario" style="color: #3b82f6;">1</span></h2>
+                    <p id="xpText" style="margin: 0; color: #94a3b8;">XP Atual: 0 / 100</p>
+                </div>
+                <div id="badgeContainer" style="font-size: 2rem;">🏅</div>
+            </div>
+        </div>
+        
+        <!-- 1. Calculadora de Macros -->
+        <div class="card">
+            <h2>Calculadora de Macros</h2>
+            <div class="form-group"><label>Objetivo</label>
+                <select id="objetivo">
+                    <option value="cutting">Cutting</option>
+                    <option value="manutencao">Manutenção</option>
+                    <option value="bulking">Bulking</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Sexo</label>
+                <select id="sexo">
+                    <option value="homem">Homem</option>
+                    <option value="mulher">Mulher</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Idade</label><input type="number" id="idade" placeholder="25"></div>
+            <div class="form-group"><label>Peso (kg)</label><input type="number" id="peso" placeholder="80"></div>
+            <div class="form-group"><label>Altura (cm)</label><input type="number" id="altura" placeholder="180"></div>
+            <button onclick="calcularMacros()">Gerar Meta Calórica</button>
+            <div id="resultados" class="result-box" style="display: none; margin-top:10px;">
+                <p>Calorias: <span id="resCalorias"></span> kcal</p>
+                <p>P: <span id="resProt"></span> | G: <span id="resGord"></span> | C: <span id="resCarb"></span></p>
+            </div>
+        </div>
+
+        <!-- 2. IA: BF% e Medidas -->
+        <div class="card">
+            <h2>🤖 IA: BF% (Marinha)</h2>
+            <div class="upload-box"><label>Fotos (3x)</label><input type="file" multiple></div>
+            <div class="form-group"><label>Cintura (cm)</label><input type="number" id="medidaCintura"></div>
+            <div class="form-group"><label>Pescoço (cm)</label><input type="number" id="medidaPescoco"></div>
+            <div class="form-group" id="divQuadril" style="display: none;"><label>Quadril (cm)</label><input type="number" id="medidaQuadril"></div>
+            <button id="btnIA" onclick="calcularBFReal()" style="background-color: #f59e0b;">Processar Dados</button>
+            <div id="resultadoIA" class="result-box" style="display: none; margin-top:10px;">
+                <p>BF: <strong id="resultadoBF"></strong></p>
+                <p>Massa Magra: <span id="massaMagra"></span>kg</p>
+            </div>
+        </div>
+
+        <!-- 3. Diário de Treino -->
+        <div class="card">
+            <h2>🏋️ Diário de Treino</h2>
+            <input type="text" id="nomeExercicio" placeholder="Exercício">
+            <input type="number" id="cargaExercicio" placeholder="Carga (kg)">
+            <input type="number" id="repsExercicio" placeholder="Reps">
+            <button onclick="registrarTreino()" style="background-color: #3b82f6; margin-top:10px;">Registrar</button>
+            <table style="width: 100%; margin-top:10px; font-size: 0.9rem;">
+                <tbody id="tabelaTreino"></tbody>
+            </table>
+        </div>
+
+        <!-- 4. Evolução de Peso (Gráfico) -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>📈 Evolução de Peso</h2>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <input type="number" id="novoPeso" placeholder="Peso atual (kg)">
+                <button onclick="registrarPeso()" style="width: auto;">Registrar Peso</button>
+            </div>
+            <div style="height: 300px;">
+                <canvas id="graficoPeso"></canvas>
+            </div>
+            <button onclick="exportarDados()" style="margin-top: 15px; background-color: #64748b;">Exportar Backup (TXT)</button>
+        </div>
+
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+</body>
+</html>
