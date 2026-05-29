@@ -174,3 +174,34 @@ window.onload = () => {
     atualizarGamificacao();
     desenharGrafico(); // <--- Adicione esta chamada
 };
+
+// Base de dados de alimentos (pode ser expandida)
+const bancoDeAlimentos = [
+    { nome: "Ovos (dúzia)", preco: 12, prot: 72 },
+    { nome: "Peito de Frango (kg)", preco: 22, prot: 310 },
+    { nome: "Arroz (kg)", preco: 6, prot: 20 },
+    { nome: "Feijão (kg)", preco: 8, prot: 190 },
+    { nome: "Aveia (kg)", preco: 10, prot: 130 }
+];
+
+function gerarDietaEconomica() {
+    const orcamento = parseFloat(document.getElementById('orcamento').value);
+    if (!orcamento) return alert("Insira um orçamento semanal.");
+
+    // Lógica simples de IA: Prioriza custo-benefício de proteína
+    let listaCompras = bancoDeAlimentos.sort((a, b) => (a.preco/a.prot) - (b.preco/b.prot));
+    
+    let html = "<strong>Lista de Compras Otimizada:</strong><br>";
+    let gasto = 0;
+    
+    listaCompras.forEach(item => {
+        if (gasto + item.preco <= orcamento) {
+            html += `• ${item.nome} (R$ ${item.preco})<br>`;
+            gasto += item.preco;
+        }
+    });
+
+    html += `<br><strong>Total Gasto: R$ ${gasto}</strong>`;
+    document.getElementById('resultadoDieta').innerHTML = html;
+    document.getElementById('resultadoDieta').style.display = 'block';
+}
