@@ -203,3 +203,23 @@ window.onload = () => {
     atualizarGamificacao();
     desenharGrafico();
 };
+
+function gerarCronograma() {
+    const peso = parseFloat(document.getElementById('peso').value);
+    const div = document.getElementById('resultadoCronograma');
+
+    if (!peso) return alert("Calcule suas calorias primeiro para gerarmos o cronograma.");
+
+    const proteinaPorRefeicao = Math.round((peso * 2) / 4); // 4 refeições
+    
+    const cronograma = `
+        <strong>Sugestão Diária:</strong><br>
+        • <strong>08:00 - Café:</strong> 3 Ovos + Aveia<br>
+        • <strong>12:00 - Almoço:</strong> 150g Frango + 200g Arroz<br>
+        • <strong>16:00 - Pré-Treino:</strong> Aveia + Fruta<br>
+        • <strong>20:00 - Jantar:</strong> 150g Frango + Feijão<br><br>
+        <em>Meta por refeição: ~${proteinaPorRefeicao}g de proteína.</em>
+    `;
+
+    div.innerHTML = cronograma;
+}
