@@ -50,7 +50,7 @@ function calcularBFReal() {
 }
 
 // ==========================================
-// 3. DIÁRIO DE TREINO, PESO E GAMIFICAÇÃO
+// 3. DIÁRIO DE TREINO E GAMIFICAÇÃO
 // ==========================================
 let recordesPessoais = JSON.parse(localStorage.getItem('athlete_prs')) || {};
 let historicoTreinos = JSON.parse(localStorage.getItem('athlete_historico')) || [];
@@ -94,25 +94,24 @@ function registrarPeso() {
     document.getElementById('novoPeso').value = '';
 }
 
-function renderizarTabelaTreinos() {
-    const tabela = document.getElementById('tabelaTreino');
-    if (tabela) {
-        tabela.innerHTML = historicoTreinos.map(t => 
-            `<tr><td>${t.nome}</td><td>${t.carga}kg</td><td>${t.reps}x</td><td>${t.status}</td></tr>`
-        ).join('');
-    }
-}
-
-function atualizarGamificacao() {
-    let nivel = Math.floor(xpTotal / 100) + 1;
-    document.getElementById('nivelUsuario').innerText = nivel;
-    document.getElementById('xpText').innerText = `XP Atual: ${xpTotal} / ${nivel * 100}`;
-}
-
 // ==========================================
-// 4. MÓDULO DIETA POR ORÇAMENTO
+// 4. MÓDULO DIETA (CORRIGIDO)
 // ==========================================
 function gerarDietaEconomica() {
+    const orcamentoInput = document.getElementById('orcamento');
+    const resultadoDiv = document.getElementById('resultadoDieta');
+    
+    if (!orcamentoInput) {
+        console.error("Elemento 'orcamento' não encontrado no HTML.");
+        return;
+    }
+
+    const orcamento = parseFloat(orcamentoInput.value);
+    if (!orcamento || orcamento <= 0) {
+        alert("Por favor, insira um valor de orçamento válido.");
+        return;
+    }
+
     const bancoDeAlimentos = [
         { nome: "Ovos (dúzia)", preco: 12, prot: 72 },
         { nome: "Peito de Frango (kg)", preco: 22, prot: 310 },
@@ -120,11 +119,6 @@ function gerarDietaEconomica() {
         { nome: "Feijão (kg)", preco: 8, prot: 190 },
         { nome: "Aveia (kg)", preco: 10, prot: 130 }
     ];
-
-    const orcamento = parseFloat(document.getElementById('orcamento').value);
-    const resultadoDiv = document.getElementById('resultadoDieta');
-
-    if (!orcamento || orcamento <= 0) return alert("Insira um orçamento válido.");
 
     let listaOrdenada = bancoDeAlimentos.sort((a, b) => (a.preco / a.prot) - (b.preco / b.prot));
     let html = "<strong>Sugestão de Compra:</strong><br><br>";
@@ -138,20 +132,36 @@ function gerarDietaEconomica() {
     });
 
     html += `<br><strong>Total do Carrinho: R$ ${gasto}</strong>`;
+    
     resultadoDiv.innerHTML = html;
     resultadoDiv.style.display = 'block';
 }
 
 // ==========================================
-// 5. EXPORTAR DADOS E GRÁFICO
+// 5. UTILITÁRIOS E RENDERIZAÇÃO
 // ==========================================
-function exportarDados() {
-    const dados = { historicoTreinos, historicoPeso, recordesPessoais };
-    const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'backup_evolucao.txt';
-    a.click();
+function renderizarTabelaTreinos() {
+    const tabela = document.getElementById('tabelaTreino');
+    if (tabela) {
+        tabela.innerHTML = historicoTreinos.map(t => 
+            `<tr><td>${t.nome}</td><td>${t.carga}kg</td><td>${t.reps}x</td><td>${t.status}</td></tr>`
+        ).join('');
+    }
+}
+
+function renderizarHistoricoPeso() {
+    const hist = document.getElementById('historicoPeso');
+    if (hist) {
+        hist.innerHTML = historicoPeso.map(h => `<div>${h.data}: <strong>${h.peso} kg</strong></div>`).join('');
+    }
+}
+
+function atualizarGamificacao() {
+    let nivel = Math.floor(xpTotal / 100) + 1;
+    const elNivel = document.getElementById('nivelUsuario');
+    const elXP = document.getElementById('xpText');
+    if (elNivel) elNivel.innerText = nivel;
+    if (elXP) elXP.innerText = `XP Atual: ${xpTotal} / ${nivel * 100}`;
 }
 
 function desenharGrafico() {
@@ -170,6 +180,7 @@ function desenharGrafico() {
 
 window.onload = () => {
     renderizarTabelaTreinos();
+    renderizarHistoricoPeso();
     atualizarGamificacao();
     desenharGrafico();
 };
