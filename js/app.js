@@ -206,19 +206,24 @@ window.onload = () => {
 
 function gerarCronograma() {
     const peso = parseFloat(document.getElementById('peso').value);
+    const objetivo = document.getElementById('objetivo').value;
     const div = document.getElementById('resultadoCronograma');
 
-    if (!peso) return alert("Calcule suas calorias primeiro para gerarmos o cronograma.");
+    if (!peso) return alert("Por favor, insira seu peso na calculadora acima primeiro.");
 
-    const proteinaPorRefeicao = Math.round((peso * 2) / 4); // 4 refeições
-    
+    // Lógica de porcionamento baseada em objetivo
+    const multiplicadorCarbo = (objetivo === 'bulking') ? 1.5 : 0.8;
+    const proteina = Math.round(peso * 2); 
+    const porcaoFrango = Math.round(proteina / 4); // Distribuição em 4 refeições
+    const porcaoArroz = Math.round((peso * multiplicadorCarbo) / 2);
+
     const cronograma = `
-        <strong>Sugestão Diária:</strong><br>
+        <strong>Seu Cronograma Personalizado (${objetivo.toUpperCase()}):</strong><br><br>
         • <strong>08:00 - Café:</strong> 3 Ovos + Aveia<br>
-        • <strong>12:00 - Almoço:</strong> 150g Frango + 200g Arroz<br>
+        • <strong>12:00 - Almoço:</strong> ${porcaoFrango}g Frango + ${porcaoArroz}g Arroz<br>
         • <strong>16:00 - Pré-Treino:</strong> Aveia + Fruta<br>
-        • <strong>20:00 - Jantar:</strong> 150g Frango + Feijão<br><br>
-        <em>Meta por refeição: ~${proteinaPorRefeicao}g de proteína.</em>
+        • <strong>20:00 - Jantar:</strong> ${porcaoFrango}g Frango + Feijão<br><br>
+        <small>Total de Proteína sugerido: ${proteina}g/dia</small>
     `;
 
     div.innerHTML = cronograma;
