@@ -89,7 +89,17 @@
             </table>
         </div>
 
-        <!-- 5. Evolução de Peso -->
+        <!-- 5. Diário Alimentar -->
+        <div class="card">
+            <h2>🍎 Diário Alimentar</h2>
+            <input type="text" id="alimento" placeholder="Alimento">
+            <input type="number" id="caloriasConsumidas" placeholder="Calorias">
+            <button onclick="registrarRefeicao()" style="background-color: #ec4899; margin-top:10px;">Registrar Refeição</button>
+            <div id="listaRefeicoes" style="margin-top:10px; font-size: 0.9rem;"></div>
+            <p style="margin-top: 10px;"><strong>Total Consumido: <span id="totalCalConsumido">0</span> kcal</strong></p>
+        </div>
+
+        <!-- 6. Evolução de Peso -->
         <div class="card" style="grid-column: 1 / -1;">
             <h2>📈 Evolução de Peso</h2>
             <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
