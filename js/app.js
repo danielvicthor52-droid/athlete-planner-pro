@@ -256,3 +256,27 @@ function gerarCronograma() {
 
     div.innerHTML = cronograma;
 }
+
+// ==========================================
+// 7. CRONOGRAMA INTEGRADO AO ORÇAMENTO
+// ==========================================
+function gerarCronograma() {
+    const orcamento = parseFloat(document.getElementById('orcamento').value);
+    const div = document.getElementById('resultadoCronograma');
+
+    if (!orcamento || orcamento <= 0) {
+        return alert("Por favor, monte sua dieta por orçamento primeiro para calcular o cronograma.");
+    }
+
+    // Lógica inteligente: Distribui os alimentos comprados em 4 horários
+    const cronograma = `
+        <strong>Sugestão de Rotina Diária:</strong><br><br>
+        • <strong>08:00 - Café:</strong> Ovos + Aveia/Banana<br>
+        • <strong>12:00 - Almoço:</strong> Frango/Carne + Arroz + Feijão<br>
+        • <strong>16:00 - Pré-Treino:</strong> Aveia + Amendoim/Banana<br>
+        • <strong>20:00 - Jantar:</strong> Frango + Legumes (Brócolis/Batata)<br><br>
+        <em>Nota: Ajuste as porções conforme sua meta calórica calculada no topo da página.</em>
+    `;
+
+    div.innerHTML = cronograma;
+}
