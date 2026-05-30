@@ -85,7 +85,7 @@ function registrarTreino() {
 }
 
 // ==========================================
-// 4. MÓDULO DIETA POR ORÇAMENTO
+// 4. MÓDULO DIETA POR ORÇAMENTO (LISTA COMPLETA)
 // ==========================================
 function gerarDietaEconomica() {
     const orcamento = parseFloat(document.getElementById('orcamento').value);
@@ -93,30 +93,58 @@ function gerarDietaEconomica() {
 
     if (!orcamento || orcamento <= 0) return alert("Insira um orçamento válido.");
 
+    // Banco de dados completo com base na sua lista detalhada
     const bancoDeAlimentos = [
-        { nome: "Ovos (dúzia)", preco: 12, prot: 72 },
-        { nome: "Peito de Frango (kg)", preco: 22, prot: 310 },
-        { nome: "Arroz (kg)", preco: 6, prot: 20 },
-        { nome: "Feijão (kg)", preco: 8, prot: 190 },
-        { nome: "Aveia (kg)", preco: 10, prot: 130 }
+        { nome: "Ovo de galinha (30 un)", preco: 20, prot: 180 },
+        { nome: "Peito de frango (1kg)", preco: 19, prot: 310 },
+        { nome: "Carne moída (1kg)", preco: 33, prot: 260 },
+        { nome: "Filé de Tilápia (1kg)", preco: 40, prot: 260 },
+        { nome: "Coxa/Sobrecoxa (1kg)", preco: 12, prot: 250 },
+        { nome: "Sardinha (1kg)", preco: 15, prot: 200 },
+        { nome: "Leite integral (1L)", preco: 5, prot: 30 },
+        { nome: "Iogurte natural (170g)", preco: 4, prot: 10 },
+        { nome: "Arroz branco (1kg)", preco: 6.5, prot: 20 },
+        { nome: "Aveia (500g)", preco: 7.5, prot: 65 },
+        { nome: "Pão de forma (500g)", preco: 7.5, prot: 40 },
+        { nome: "Batata doce (1kg)", preco: 5.5, prot: 15 },
+        { nome: "Mandioca (1kg)", preco: 6.5, prot: 10 },
+        { nome: "Macarrão (500g)", preco: 5.5, prot: 60 },
+        { nome: "Feijão (1kg)", preco: 8.5, prot: 190 },
+        { nome: "Grão-de-bico (500g)", preco: 10, prot: 95 },
+        { nome: "Amendoim (500g)", preco: 8.5, prot: 130 },
+        { nome: "Pasta de amendoim (500g)", preco: 18, prot: 120 },
+        { nome: "Banana (1kg)", preco: 6, prot: 10 },
+        { nome: "Maçã (1kg)", preco: 9, prot: 3 },
+        { nome: "Brócolis (Maço)", preco: 6.5, prot: 15 }
     ];
 
+    // Ordena pelo custo-benefício (preço por proteína)
     let listaOrdenada = bancoDeAlimentos.sort((a, b) => (a.preco / a.prot) - (b.preco / b.prot));
-    let html = "<strong>Sugestão de Compra:</strong><br><br>";
+    
+    let html = `<strong>Lista de Compras para R$ ${orcamento}:</strong><br><br>`;
     let gasto = 0;
     
     listaOrdenada.forEach(item => {
         if (gasto + item.preco <= orcamento) {
-            html += `• ${item.nome} - R$ ${item.preco}<br>`;
+            html += `• ${item.nome} - R$ ${item.preco.toFixed(2)}<br>`;
             gasto += item.preco;
         }
     });
 
-    html += `<br><strong>Total do Carrinho: R$ ${gasto}</strong>`;
+    html += `<br><strong>Total Gasto: R$ ${gasto.toFixed(2)}</strong>`;
+    html += `<br><button onclick="copiarListaParaWhatsApp()" style="margin-top:10px; background:#25d366; color:white; border:none; padding:8px; cursor:pointer; border-radius:5px;">Copiar para WhatsApp</button>`;
+    
     resultadoDiv.innerHTML = html;
     resultadoDiv.style.display = 'block';
+    
+    // Armazena para o botão de copiar
+    window.listaParaCopiar = html.replace(/<br>/g, "\n").replace(/<[^>]*>/g, "").replace("Copiar para WhatsApp", "");
 }
 
+function copiarListaParaWhatsApp() {
+    navigator.clipboard.writeText(window.listaParaCopiar);
+    alert("Lista copiada! Cole no WhatsApp para enviar.");
+}
 // ==========================================
 // 5. DIÁRIO ALIMENTAR
 // ==========================================
